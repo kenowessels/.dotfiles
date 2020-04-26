@@ -1,37 +1,54 @@
 #!/bin/bash
 
+scriptpath=$( cd "$(dirname "${BASH_SOURCE[0]}")" ; pwd -P )
+
 echo 'This Setup script helps to initialize a new system Setup.'
 echo '1.) Installing Packages'
 echo '2.) Set Default Shell (WIP)'
 echo ''
 
 # Package Manager
-PS3="Package Manager : "
-select packagemanager in "pacman" "apt-get" "Skip package install" Abort
+PS3="What System are you on? : "
+select system in "arch" "ubuntu" "Abort"
 do
-   case "$packagemanager" in
+   case "$system" in
      Abort)  echo "End"; break ;;
         "")  echo "Invalid" ;;
-   apt-get) echo "Not Supported Yet" ;;
-         *)  echo "You chose $packagemanager" &&\
+    ubuntu) echo "Not Supported Yet" ;;
+         *)  echo "You chose $system" &&\
              break
    esac
 done
 
-# Install Packages with Pacman
-# Todo use yay to be able to install AUR Packages as well
-if [ $packagemanager = "pacman" ]; then
-    echo 'This will install these packages:'
-    echo '-------'
-    cat pacmanpkglist.txt
-    echo '-------'
-    echo ''
-    echo 'Do you Agree? (Y/n)'
-    read aggreepkginstall
-
-    if [ -z "$aggreepkginstall" ] || [ $aggreepkginstall = 'Y' ] || [ $aggreepkginstall = 'y' ]; then
-        sudo pacman -S - < pacmanpkglist.txt
+# Install Packages for Arch-Linux
+if [ $system = "arch" ]; then
+    
+    echo "Install 'yay' for aur package installation (Y/n)"
+    read aggreeyayinstall
+    if [ -z "$aggreeyayinstall" ] || [ $aggreeyayinstall = 'Y' ] || [ $aggreeyayinstall = 'y' ]; then
+        sudo pacman --noconfirm -S yay
     else
-        echo "Won't install anything"
+        echo "Won't install yay";
     fi
+
+    packagePath="${scriptpath}/arch-packages/*"
+
+    for file in $packagePath;
+    do
+        echo -e "Do you want to Install this set of Packges? '${file}':"
+        echo '-------'
+        cat $file
+        echo '-------'
+        echo ''
+        echo 'Do you Agree? (Y/n)'
+        read aggreepkginstall
+
+        if [ -z "$aggreepkginstall" ] || [ $aggreepkginstall = 'Y' ] || [ $aggreepkginstall = 'y' ]; then
+            sudo yay --noconfirm -Syy - < $file
+        else
+            echo "Won't install '${file}'"
+        fi
+    done
 fi
+
+# TODO Step 2 "Set default shell"

@@ -1,0 +1,5 @@
+firefox
+fish
+thunderbird
+libreoffice-still
+libreoffice-still-de
