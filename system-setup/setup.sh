@@ -19,6 +19,7 @@ do
 done
 
 # Install Packages with Pacman
+# Todo use yay to be able to install AUR Packages as well
 if [ $packagemanager = "pacman" ]; then
     echo 'This will install these packages:'
     echo '-------'
